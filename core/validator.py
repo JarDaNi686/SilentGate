@@ -1,6 +1,6 @@
 """
 SilentGate - core/validator.py
-Author  : JarDan
+Author  : JarDani
 License : MIT
 """
 

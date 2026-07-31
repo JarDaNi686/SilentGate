@@ -3,7 +3,7 @@
  * ===================================
  * API    : NtProtectVirtualMemory
  * SSN    : 80 (0x50)
- * Author : JarDan
+ * Author : JarDani
  * License: MIT
  *
  * USAGE:

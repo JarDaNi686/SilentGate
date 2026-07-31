@@ -3,7 +3,7 @@
  * ===================================
  * API    : NtAllocateVirtualMemory
  * SSN    : 24 (0x18)
- * Author : JarDan
+ * Author : JarDani
  * License: MIT
  *
  * USAGE:

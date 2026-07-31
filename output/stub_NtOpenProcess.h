@@ -3,7 +3,7 @@
  * ===================================
  * API    : NtOpenProcess
  * SSN    : 38 (0x26)
- * Author : JarDan
+ * Author : JarDani
  * License: MIT
  *
  * USAGE:

@@ -3,7 +3,7 @@
  * ===================================
  * API    : NtWriteVirtualMemory
  * SSN    : 58 (0x3a)
- * Author : JarDan
+ * Author : JarDani
  * License: MIT
  *
  * USAGE:

@@ -3,7 +3,7 @@
 ; ===========================================================
 ; API    : NtCreateThreadEx
 ; SSN    : 199 (0xc7)
-; Author : JarDan
+; Author : JarDani
 ; License: MIT
 ;
 ; HOW THIS WORKS:

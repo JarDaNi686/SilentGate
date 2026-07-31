@@ -2,7 +2,7 @@
 ## Indirect Syscall Stub Generator with EDR Evasion Intelligence Layer
 ### Final Project Blueprint v2.0
 
-**Author:** JarDan
+**Author:** JarDani
 **GitHub:** https://github.com/JarDaNi686/SilentGate
 **License:** MIT
 **Vision:** A real-world usable tool that happens to also be a portfolio project
@@ -13,7 +13,7 @@
 > "Security is not an option. It is a need.
 >  Like every great thing — it should be open."
 >
-> — JarDan, founding principle of SilentGate
+> — JarDani, founding principle of SilentGate
 
 ---
 
@@ -303,5 +303,5 @@ for the same reason Linus Torvalds open sourced Linux.
 Security is not an option. It is a need.
 And what the world needs should belong to everyone.
 
-— JarDan, July 2026
+— JarDani, July 2026
 ENDOFFILE

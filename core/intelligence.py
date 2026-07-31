@@ -2,7 +2,7 @@
 SilentGate - core/intelligence.py
 Step 5 of the pipeline: Confidence Rating + Defender Perspective
 
-Author  : JarDan
+Author  : JarDani
 License : MIT
 Purpose : Analyses the generated stub and produces:
           1. Evasion confidence rating per EDR product
@@ -133,7 +133,7 @@ def get_remaining_risks(api_name, edr_data):
 def get_defender_perspective(api_name, edr_data):
     """
     What a blue teamer needs to detect this technique.
-    This is the defender perspective — JarDan thinks in
+    This is the defender perspective — JarDani thinks in
     both directions.
     """
     api_intel = edr_data.get(api_name, {})

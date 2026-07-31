@@ -2,7 +2,7 @@
 SilentGate - core/visualiser.py
 Step 4 of the pipeline: ASCII Call Stack Visualiser
 
-Author  : JarDan
+Author  : JarDani
 License : MIT
 Purpose : Prints a live ASCII diagram showing exactly where
           the EDR hook sits and where our indirect jump bypasses it.
@@ -21,7 +21,7 @@ def print_banner():
   ╚══════╝╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
 
   Indirect Syscall Stub Generator
-  Author  : JarDan
+  Author  : JarDani
   License : MIT — Free for the security community
   Version : 1.0.0
 """)

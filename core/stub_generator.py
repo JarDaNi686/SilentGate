@@ -2,7 +2,7 @@
 SilentGate - core/stub_generator.py
 Step 3 of the pipeline: C and ASM Stub Generator
 
-Author  : JarDan
+Author  : JarDani
 License : MIT
 Purpose : Generates indirect syscall stubs in C and ASM format
           using the SSN resolved by ssn_resolver.py.
@@ -99,7 +99,7 @@ def generate_c_stub(api_name, ssn, ssn_hex):
  * ===================================
  * API    : {api_name}
  * SSN    : {ssn} ({ssn_hex})
- * Author : JarDan
+ * Author : JarDani
  * License: MIT
  *
  * USAGE:
@@ -172,7 +172,7 @@ def generate_asm_stub(api_name, ssn, ssn_hex):
 ; ===========================================================
 ; API    : {api_name}
 ; SSN    : {ssn} ({ssn_hex})
-; Author : JarDan
+; Author : JarDani
 ; License: MIT
 ;
 ; HOW THIS WORKS:
