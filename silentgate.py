@@ -10,6 +10,7 @@ from core.intelligence  import print_intelligence_report
 from core.reporter      import generate_and_save
 from core.unhooker      import unhook_ntdll, print_unhook_report
 from core.sleep_encrypt import encrypt_payload, sleep_encrypted, decrypt_and_verify, print_sleep_encrypt_report
+from core.etw_patcher   import patch_etw, restore_etw, print_etw_report
 
 
 def parse_args():
@@ -83,7 +84,13 @@ def main():
         list_supported_apis()
         sys.exit(0)
 
-    # Run unhooker first on all operations
+    # Step 1 - Patch ETW first to silence telemetry
+    print("  [*] Patching ETW to silence telemetry...")
+    etw_result = patch_etw(explain=args.explain)
+    if args.explain:
+        print_etw_report(etw_result)
+
+    # Step 2 - Unhook ntdll to remove EDR hooks
     print("  [*] Running ntdll unhooker before operations...")
     unhook_result = unhook_ntdll(explain=args.explain)
     if args.explain:
