@@ -212,6 +212,40 @@ v3.0  Plugin architecture
 
 ---
 
+
+---
+
+## What SilentGate v1.0 Is and Is Not
+
+**What it is:**
+
+SilentGate is an intelligence-driven indirect syscall stub generator and wrapper.
+
+It resolves real Syscall Service Numbers dynamically from ntdll.dll, generates
+ready-to-use C and ASM stub code, explains every decision with MITRE ATT&CK
+mapping, rates evasion confidence per EDR product, and provides the defender
+perspective for every technique.
+
+**What it is not (yet):**
+
+SilentGate v1.0 does not compile or execute anything automatically. The red
+teamer uses the generated stubs and resolved SSN values to build their own
+execution wrapper. The tool is a generator and intelligence layer — not an
+end-to-end attack framework.
+
+**Lab tested:**
+
+The indirect syscall technique was validated in an isolated lab against
+Windows 10 x64 with Windows Defender fully enabled. The baseline direct
+API call payload was hard blocked. The SilentGate indirect syscall
+implementation produced zero detections across all 4 protection layers.
+
+**v2.0 goal:**
+
+Automate the full pipeline — generate stubs, write the wrapper, compile,
+and produce a ready-to-test executable in one command.
+
+---
 ## Ethical Statement
 
 SilentGate is built for authorised penetration testing,
