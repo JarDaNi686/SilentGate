@@ -1,0 +1,112 @@
+cat > ~/silentgate/data/mitre_mapping.json << 'ENDOFFILE'
+{
+  "techniques": {
+    "TA0005": {
+      "name": "Defense Evasion",
+      "type": "Tactic",
+      "description": "Techniques used to avoid detection throughout an intrusion",
+      "url": "https://attack.mitre.org/tactics/TA0005"
+    },
+    "T1055": {
+      "name": "Process Injection",
+      "type": "Technique",
+      "tactic": "TA0005",
+      "description": "Injecting code into the address space of another process to evade defenses and elevate privileges",
+      "url": "https://attack.mitre.org/techniques/T1055",
+      "apis_involved": [
+        "NtAllocateVirtualMemory",
+        "NtWriteVirtualMemory",
+        "NtProtectVirtualMemory",
+        "NtCreateThreadEx",
+        "NtOpenProcess"
+      ],
+      "detection": "Monitor API calls associated with process injection. Flag unusual combinations of OpenProcess, VirtualAlloc, WriteProcessMemory, and CreateRemoteThread",
+      "platforms": ["Windows"]
+    },
+    "T1055.003": {
+      "name": "Thread Execution Hijacking",
+      "type": "Sub-Technique",
+      "parent": "T1055",
+      "tactic": "TA0005",
+      "description": "Injecting malicious code into hijacked legitimate threads to blend with normal process activity",
+      "url": "https://attack.mitre.org/techniques/T1055/003",
+      "apis_involved": ["NtCreateThreadEx", "NtOpenProcess"],
+      "detection": "Monitor for remote thread creation. Event ID 8 in Sysmon captures CreateRemoteThread. Flag threads created in processes that do not normally spawn threads",
+      "platforms": ["Windows"]
+    },
+    "T1055.012": {
+      "name": "Process Hollowing",
+      "type": "Sub-Technique",
+      "parent": "T1055",
+      "tactic": "TA0005",
+      "description": "Unmapping legitimate process memory and replacing it with malicious code",
+      "url": "https://attack.mitre.org/techniques/T1055/012",
+      "apis_involved": [
+        "NtAllocateVirtualMemory",
+        "NtWriteVirtualMemory",
+        "NtProtectVirtualMemory"
+      ],
+      "detection": "Monitor for NtUnmapViewOfSection followed by VirtualAllocEx and WriteProcessMemory in the same process context. Sysmon Event ID 10 for process access",
+      "platforms": ["Windows"]
+    },
+    "T1106": {
+      "name": "Native API",
+      "type": "Technique",
+      "tactic": "TA0005",
+      "description": "Using Windows native APIs to execute malicious code and bypass higher-level API monitoring",
+      "url": "https://attack.mitre.org/techniques/T1106",
+      "apis_involved": [
+        "NtAllocateVirtualMemory",
+        "NtWriteVirtualMemory",
+        "NtProtectVirtualMemory",
+        "NtCreateThreadEx",
+        "NtOpenProcess"
+      ],
+      "detection": "Monitor for direct syscall invocations that bypass Win32 API layer. Look for syscall instructions originating outside ntdll.dll address range",
+      "platforms": ["Windows"]
+    },
+    "T1562.001": {
+      "name": "Impair Defenses: Disable or Modify Tools",
+      "type": "Sub-Technique",
+      "parent": "T1562",
+      "tactic": "TA0005",
+      "description": "Modifying or disabling security tools to avoid detection during an intrusion",
+      "url": "https://attack.mitre.org/techniques/T1562/001",
+      "apis_involved": [
+        "NtProtectVirtualMemory",
+        "NtWriteVirtualMemory"
+      ],
+      "detection": "Monitor for modifications to security tool processes. Event ID 4656 for object access. Alert on memory writes targeting known security product processes",
+      "platforms": ["Windows"]
+    },
+    "T1027": {
+      "name": "Obfuscated Files or Information",
+      "type": "Technique",
+      "tactic": "TA0005",
+      "description": "Making files or information difficult to discover or analyse",
+      "url": "https://attack.mitre.org/techniques/T1027",
+      "apis_involved": [],
+      "description_silentgate": "SilentGate uses indirect jumps to obscure the true origin of syscall invocations — making the call appear to originate from trusted ntdll code",
+      "detection": "Monitor for syscall instructions executing from unexpected memory regions. Compare call stack return addresses against known module boundaries",
+      "platforms": ["Windows"]
+    },
+    "T1057": {
+      "name": "Process Discovery",
+      "type": "Technique",
+      "tactic": "TA0007",
+      "description": "Gathering information about running processes to find targets for injection or privilege escalation",
+      "url": "https://attack.mitre.org/techniques/T1057",
+      "apis_involved": ["NtOpenProcess"],
+      "detection": "Monitor for unusual process handle acquisition. Sysmon Event ID 10 logs process access with requested access rights. Flag PROCESS_ALL_ACCESS requests from non-system processes",
+      "platforms": ["Windows"]
+    }
+  },
+  "api_to_mitre": {
+    "NtAllocateVirtualMemory": ["T1055", "T1055.012", "T1106"],
+    "NtWriteVirtualMemory":    ["T1055", "T1055.012", "T1106", "T1562.001"],
+    "NtProtectVirtualMemory":  ["T1055", "T1055.012", "T1106", "T1562.001"],
+    "NtCreateThreadEx":        ["T1055", "T1055.003", "T1106"],
+    "NtOpenProcess":           ["T1057", "T1055", "T1106"]
+  }
+}
+ENDOFFILE

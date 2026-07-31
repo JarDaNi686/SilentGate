@@ -1,0 +1,85 @@
+{
+  "description": "Expected SSN values per Windows build for validation",
+  "builds": {
+    "Windows 10 1507": {
+      "build_number": "10240",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 187,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 10 1607": {
+      "build_number": "14393",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 189,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 10 1809": {
+      "build_number": "17763",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 195,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 10 21H2": {
+      "build_number": "19044",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 199,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 10 22H2": {
+      "build_number": "19045",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 199,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 11 21H2": {
+      "build_number": "22000",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 203,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 11 22H2": {
+      "build_number": "22621",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 203,
+        "NtOpenProcess": 38
+      }
+    },
+    "Windows 11 23H2": {
+      "build_number": "22631",
+      "ssn": {
+        "NtAllocateVirtualMemory": 24,
+        "NtWriteVirtualMemory": 58,
+        "NtProtectVirtualMemory": 80,
+        "NtCreateThreadEx": 203,
+        "NtOpenProcess": 38
+      }
+    }
+  }
+}
