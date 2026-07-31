@@ -8,6 +8,7 @@ from core.stub_generator import generate_stub
 from core.visualiser    import print_banner, print_full_visualisation
 from core.intelligence  import print_intelligence_report
 from core.reporter      import generate_and_save
+from core.unhooker      import unhook_ntdll, print_unhook_report
 
 
 def parse_args():
@@ -80,6 +81,12 @@ def main():
     if args.list:
         list_supported_apis()
         sys.exit(0)
+
+    # Run unhooker first on all operations
+    print("  [*] Running ntdll unhooker before operations...")
+    unhook_result = unhook_ntdll(explain=args.explain)
+    if args.explain:
+        print_unhook_report(unhook_result)
 
     # --all
     if args.all:
