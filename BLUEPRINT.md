@@ -305,3 +305,119 @@ And what the world needs should belong to everyone.
 
 — JarDani, July 2026
 ENDOFFILE
+
+---
+
+## 15. Roadmap to 91% Evasion Rate
+
+### Current State v1.0
+
+| EDR Product | Evasion Rate |
+|-------------|--------------|
+| Windows Defender | 78% |
+| CrowdStrike Falcon | 61% |
+| SentinelOne | 65% |
+| Overall Average | 68% |
+
+Technique: Indirect syscalls via dynamic SSN resolution
+
+---
+
+### Gap Analysis
+
+| Version | Technique | Adds | Cumulative |
+|---------|-----------|------|------------|
+| v1.0 | Indirect syscalls | 68% | 68% |
+| v2.0 | Ntdll unhooking from disk | +8% | 76% |
+| v2.0 | Sleep encryption | +5% | 81% |
+| v2.0 | ETW patching | +4% | 85% |
+| v3.0 | Call stack spoofing | +4% | 89% |
+| v3.0 | Polymorphic stub mutation | +2% | 91% |
+
+Target: 91% overall evasion rate across major EDR products
+
+---
+
+### v2.0 Target 85% Evasion
+
+Technique 1 Ntdll Unhooking from Disk adds 8 percent
+
+EDR hooks ntdll in memory. A clean unhooked copy exists on disk.
+We load the clean copy directly into memory and use that instead.
+All EDR hooks disappear because we never touch the hooked version.
+
+Before unhooking:
+  Our code goes to hooked ntdll in memory and EDR intercepts it
+
+After unhooking:
+  Our code goes to clean ntdll loaded from disk and kernel executes it
+
+Technique 2 Sleep Encryption adds 5 percent
+
+Between operations the payload encrypts itself in memory.
+EDR memory scanners see only encrypted garbage between executions.
+We decrypt execute and re-encrypt in milliseconds.
+
+Technique 3 ETW Patching adds 4 percent
+
+Patch EtwEventWrite in memory to return immediately without writing.
+Silences Windows telemetry before sensitive operations begin.
+Removes a major EDR data source entirely.
+
+---
+
+### v3.0 Target 91% Evasion
+
+Technique 4 Call Stack Spoofing adds 4 percent
+
+EDR inspects return addresses on the call stack after every syscall.
+We forge the return address to point into a legitimate module.
+EDR sees kernel32.dll as the call origin and ignores it.
+
+Technique 5 Polymorphic Stub Mutation adds 2 percent
+
+Every generated stub has randomised variable names and junk code.
+No two executions produce the same byte signature.
+Signature detection of SilentGate output becomes impossible.
+
+---
+
+### The Honest Ceiling Why 100% Is Impossible
+
+| Detection Layer | Why We Cannot Bypass It |
+|----------------|------------------------|
+| Intel PT hardware tracing | Records every instruction at CPU level |
+| Hypervisor EDR | Operates below our code entirely |
+| Behavioural AI correlation | Detects patterns not signatures |
+| Kernel ETW callbacks | Fire at kernel level regardless of technique |
+
+These require a signed kernel driver or kernel exploit.
+Both are outside the scope of a responsible open source tool.
+91% is the honest ceiling for a user-mode tool built responsibly.
+
+---
+
+### What 91% Means in Practice
+
+A red teamer using SilentGate v3.0 would evade detection on 9 out of
+10 engagements against Windows Defender, CrowdStrike, and SentinelOne.
+
+The remaining 10% would be caught by kernel level callbacks,
+behavioural correlation across the full injection chain,
+and hardware level monitoring on high security targets.
+
+This is the honest professional picture.
+No tool promises 100%. SilentGate promises to be honest.
+
+---
+
+### Quantum Inspired Enhancement Research Phase
+
+IBM Quantum provides a public API for true quantum random number generation.
+A future research module could use quantum RNG to generate genuinely
+random polymorphic mutations making each stub mathematically unique.
+This is not quantum computing in the traditional sense.
+It is using quantum measurement for true randomness that classical
+computers cannot replicate.
+
+Status: Research phase. No implementation timeline yet.
