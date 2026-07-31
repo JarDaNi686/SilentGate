@@ -9,6 +9,7 @@ from core.visualiser    import print_banner, print_full_visualisation
 from core.intelligence  import print_intelligence_report
 from core.reporter      import generate_and_save
 from core.unhooker      import unhook_ntdll, print_unhook_report
+from core.sleep_encrypt import encrypt_payload, sleep_encrypted, decrypt_and_verify, print_sleep_encrypt_report
 
 
 def parse_args():
