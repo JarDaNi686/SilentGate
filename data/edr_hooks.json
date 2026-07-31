@@ -1,0 +1,104 @@
+cat > ~/silentgate/data/edr_hooks.json << 'ENDOFFILE'
+{
+  "NtAllocateVirtualMemory": {
+    "description": "Allocates a region of virtual memory in the address space of a process",
+    "why_edr_hooks": "First step in every shellcode injection. EDR hooks this to detect memory allocation with RWX permissions or suspicious size ranges",
+    "hook_location": "ntdll.dll export table — first 5 bytes patched with JMP to EDR handler",
+    "what_edr_checks": [
+      "Memory protection flags — RWX allocation is immediately suspicious",
+      "Allocation size — very large or very specific sizes match known shellcode loaders",
+      "Calling process — allocation from an unusual parent process raises alerts",
+      "Frequency — rapid repeated allocations indicate shellcode staging"
+    ],
+    "defender_event_ids": ["4656", "4663"],
+    "mitre_id": "T1055",
+    "mitre_name": "Process Injection",
+    "evasion_confidence": {
+      "windows_defender": 78,
+      "crowdstrike_falcon": 61,
+      "sentinelone": 65,
+      "explanation": "Confidence drops against kernel-level EDRs that monitor syscall patterns rather than just user-mode hooks"
+    }
+  },
+  "NtWriteVirtualMemory": {
+    "description": "Writes data into the virtual address space of a target process",
+    "why_edr_hooks": "Used to write shellcode into previously allocated memory. EDR correlates this with NtAllocateVirtualMemory calls to detect injection chains",
+    "hook_location": "ntdll.dll export table — first 5 bytes patched with JMP to EDR handler",
+    "what_edr_checks": [
+      "Target process — writing into another process memory is highly suspicious",
+      "Data content — entropy analysis to detect shellcode patterns",
+      "Correlation — is this following an NtAllocateVirtualMemory call on same region",
+      "Write size — matches known payload sizes"
+    ],
+    "defender_event_ids": ["4656", "4663", "10"],
+    "mitre_id": "T1055.012",
+    "mitre_name": "Process Hollowing",
+    "evasion_confidence": {
+      "windows_defender": 75,
+      "crowdstrike_falcon": 58,
+      "sentinelone": 62,
+      "explanation": "Behavioural correlation between Allocate and Write calls is the main detection vector even with syscall bypass"
+    }
+  },
+  "NtProtectVirtualMemory": {
+    "description": "Changes the protection attributes of a region of virtual memory",
+    "why_edr_hooks": "Without changing memory to executable the shellcode cannot run. EDR watches for RW to RX transitions which indicate staged shellcode execution",
+    "hook_location": "ntdll.dll export table — first 5 bytes patched with JMP to EDR handler",
+    "what_edr_checks": [
+      "Protection change direction — RW to RX or RWX is the classic shellcode pattern",
+      "Region origin — was this region previously written to by NtWriteVirtualMemory",
+      "Process context — protection changes in remote processes are flagged",
+      "Memory address — known shellcode staging address ranges"
+    ],
+    "defender_event_ids": ["4663"],
+    "mitre_id": "T1055",
+    "mitre_name": "Process Injection",
+    "evasion_confidence": {
+      "windows_defender": 72,
+      "crowdstrike_falcon": 55,
+      "sentinelone": 60,
+      "explanation": "The RW to RX transition is one of the strongest behavioural indicators. Even with syscall bypass the pattern remains visible to kernel callbacks"
+    }
+  },
+  "NtCreateThreadEx": {
+    "description": "Creates a thread that runs in the virtual address space of another process",
+    "why_edr_hooks": "The execution trigger. EDR hooks this as the final step of process injection to catch shellcode at the moment it is launched",
+    "hook_location": "ntdll.dll export table — first 5 bytes patched with JMP to EDR handler",
+    "what_edr_checks": [
+      "Start address — does the thread start address point to previously written memory",
+      "Target process — remote thread creation is always suspicious",
+      "Thread flags — specific flags indicate injection attempts",
+      "Call chain — correlates with prior Allocate and Write calls on same target"
+    ],
+    "defender_event_ids": ["4688", "8"],
+    "mitre_id": "T1055.003",
+    "mitre_name": "Thread Execution Hijacking",
+    "evasion_confidence": {
+      "windows_defender": 70,
+      "crowdstrike_falcon": 52,
+      "sentinelone": 57,
+      "explanation": "Remote thread creation into another process is one of the most monitored behaviours. Kernel ETW callbacks catch this even when user-mode hooks are bypassed"
+    }
+  },
+  "NtOpenProcess": {
+    "description": "Opens an existing process and returns a handle to it",
+    "why_edr_hooks": "Required to access another process before injection. EDR hooks this to detect when a process tries to open sensitive targets like lsass or security tools",
+    "hook_location": "ntdll.dll export table — first 5 bytes patched with JMP to EDR handler",
+    "what_edr_checks": [
+      "Target process — opening lsass, security tools, or privileged processes is flagged",
+      "Access rights — PROCESS_ALL_ACCESS or VM_OPERATION rights indicate injection intent",
+      "Calling process — unexpected processes opening sensitive targets",
+      "Frequency — rapid process handle acquisition indicates enumeration or injection prep"
+    ],
+    "defender_event_ids": ["4656", "10"],
+    "mitre_id": "T1057",
+    "mitre_name": "Process Discovery",
+    "evasion_confidence": {
+      "windows_defender": 74,
+      "crowdstrike_falcon": 59,
+      "sentinelone": 63,
+      "explanation": "Handle acquisition patterns are visible at kernel level regardless of how the syscall is invoked"
+    }
+  }
+}
+ENDOFFILE
