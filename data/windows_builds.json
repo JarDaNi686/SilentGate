@@ -39,7 +39,8 @@
         "NtProtectVirtualMemory": 80,
         "NtCreateThreadEx": 199,
         "NtOpenProcess": 38
-      }
+      },
+      "etw_first_byte": "0x4C"
     },
     "Windows 10 22H2": {
       "build_number": "19045",
@@ -49,7 +50,8 @@
         "NtProtectVirtualMemory": 80,
         "NtCreateThreadEx": 199,
         "NtOpenProcess": 38
-      }
+      },
+      "etw_first_byte": "0x4C"
     },
     "Windows 11 21H2": {
       "build_number": "22000",
@@ -59,7 +61,8 @@
         "NtProtectVirtualMemory": 80,
         "NtCreateThreadEx": 203,
         "NtOpenProcess": 38
-      }
+      },
+      "etw_first_byte": "0x40"
     },
     "Windows 11 22H2": {
       "build_number": "22621",
@@ -69,7 +72,8 @@
         "NtProtectVirtualMemory": 80,
         "NtCreateThreadEx": 203,
         "NtOpenProcess": 38
-      }
+      },
+      "etw_first_byte": "0x40"
     },
     "Windows 11 23H2": {
       "build_number": "22631",
@@ -79,7 +83,11 @@
         "NtProtectVirtualMemory": 80,
         "NtCreateThreadEx": 203,
         "NtOpenProcess": 38
-      }
+      },
+      "etw_first_byte": "0x40"
     }
+  },
+  "notes": {
+    "etw_first_byte": "Windows 11 uses REX prefix 0x40 as first byte of EtwEventWrite stub. Windows 10 uses 0x4C (mov r10 rcx). Both are patchable with 0xC3 ret. Our patcher handles both correctly."
   }
 }
