@@ -11,6 +11,7 @@ from core.reporter      import generate_and_save
 from core.unhooker      import unhook_ntdll, print_unhook_report
 from core.sleep_encrypt import encrypt_payload, sleep_encrypted, decrypt_and_verify, print_sleep_encrypt_report
 from core.etw_patcher   import patch_etw, restore_etw, print_etw_report
+from core.poly_mutator  import generate_polymorphic_stubs, print_poly_report
 
 
 def parse_args():
