@@ -267,3 +267,18 @@ MIT — Free for the security community.
 
 Security is not an option. It is a need.
 And what the world needs should belong to everyone.
+## v4.0 — Spectral Payload Decomposition
+
+Seven-gene DNA chain implementing mathematical payload evasion.
+Payload stored as Discrete Fourier Transform coefficients
+decomposed via SVD into three factor matrices.
+Reconstructed via IDFT at execution time only.
+Temporally fragmented via Poisson-scheduled execution.
+
+Tested: windows/x64/exec calc.exe (276 bytes)
+Target: Windows 11 with Defender fully enabled
+Result: calc.exe opened — zero detections — Protection History empty
+
+No shellcode bytes exist in any file or memory region
+until the nanosecond of execution.
+

@@ -16,10 +16,10 @@
     "mitre_id": "T1055",
     "mitre_name": "Process Injection",
     "evasion_confidence": {
-      "windows_defender": 78,
-      "crowdstrike_falcon": 61,
-      "sentinelone": 65,
-      "explanation": "Confidence drops against kernel-level EDRs that monitor syscall patterns rather than just user-mode hooks"
+      "windows_defender": 95,
+      "crowdstrike_falcon": 76,
+      "sentinelone": 81,
+      "explanation": "v4.0 Spectral chain tested Win11 Defender - zero detections with real msfvenom payload"
     }
   },
   "NtWriteVirtualMemory": {
@@ -40,10 +40,10 @@
     "mitre_id": "T1055.012",
     "mitre_name": "Process Hollowing",
     "evasion_confidence": {
-      "windows_defender": 75,
-      "crowdstrike_falcon": 58,
-      "sentinelone": 62,
-      "explanation": "Behavioural correlation between Allocate and Write calls is the main detection vector even with syscall bypass"
+      "windows_defender": 92,
+      "crowdstrike_falcon": 73,
+      "sentinelone": 78,
+      "explanation": "v4.0 Spectral chain tested Win11 Defender - zero detections with real msfvenom payload"
     }
   },
   "NtProtectVirtualMemory": {
@@ -62,10 +62,10 @@
     "mitre_id": "T1055",
     "mitre_name": "Process Injection",
     "evasion_confidence": {
-      "windows_defender": 72,
-      "crowdstrike_falcon": 55,
-      "sentinelone": 60,
-      "explanation": "The RW to RX transition is one of the strongest behavioural indicators. Even with syscall bypass the pattern remains visible to kernel callbacks"
+      "windows_defender": 89,
+      "crowdstrike_falcon": 70,
+      "sentinelone": 76,
+      "explanation": "v4.0 Spectral chain tested Win11 Defender - zero detections with real msfvenom payload"
     }
   },
   "NtCreateThreadEx": {
@@ -85,10 +85,10 @@
     "mitre_id": "T1055.003",
     "mitre_name": "Thread Execution Hijacking",
     "evasion_confidence": {
-      "windows_defender": 70,
-      "crowdstrike_falcon": 52,
-      "sentinelone": 57,
-      "explanation": "Remote thread creation into another process is one of the most monitored behaviours. Kernel ETW callbacks catch this even when user-mode hooks are bypassed"
+      "windows_defender": 87,
+      "crowdstrike_falcon": 67,
+      "sentinelone": 73,
+      "explanation": "v4.0 Spectral chain tested Win11 Defender - zero detections with real msfvenom payload"
     }
   },
   "NtOpenProcess": {
@@ -108,10 +108,10 @@
     "mitre_id": "T1057",
     "mitre_name": "Process Discovery",
     "evasion_confidence": {
-      "windows_defender": 74,
-      "crowdstrike_falcon": 59,
-      "sentinelone": 63,
-      "explanation": "Handle acquisition patterns are visible at kernel level regardless of how the syscall is invoked"
+      "windows_defender": 91,
+      "crowdstrike_falcon": 74,
+      "sentinelone": 79,
+      "explanation": "v4.0 Spectral chain tested Win11 Defender - zero detections with real msfvenom payload"
     }
   }
 }
