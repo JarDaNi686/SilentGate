@@ -1,6 +1,6 @@
 /*
  * SilentGate Fragment 0/1
- * Offset: 0 bytes  Size: 813 bytes
+ * Offset: 0 bytes  Size: 356 bytes
  * Schedule: t=120ms (Poisson process)
  * Author: JarDani
  */
@@ -13,9 +13,9 @@
 
 #define FRAGMENT_ID   0
 #define N_FRAGMENTS   2
-#define PAYLOAD_SIZE  1627
+#define PAYLOAD_SIZE  712
 #define CHUNK_OFFSET  0
-#define CHUNK_SIZE    813
+#define CHUNK_SIZE    356
 #define SLEEP_NEXT_MS 120
 
 /* Forward declaration of reconstructor */
