@@ -1,0 +1,47 @@
+{
+  "gene": 3,
+  "output_contract": "three matrices G,A1,A2 -> GENE4 eigenvalue_camouflager",
+  "size_bytes": 19,
+  "size_elements": 19,
+  "sha256": "bb8907309c118defe3d6c759e50f4af2505c3d7dbebf085892df2a865698a1d1",
+  "dtype": "uint8",
+  "min_byte": 32,
+  "max_byte": 236,
+  "mean_byte": 119.10526315789474,
+  "source_type": "bytes",
+  "original_length": 19,
+  "padded_length": 32,
+  "coeff_count": 32,
+  "coeff_dtype": "complex128",
+  "magnitude_entropy": 4.573217640013327,
+  "coeff_sha256": "48657a93bd47e1ef3d1c6730e661c30df6af8160b451c8cc7acb52fd50babf00",
+  "dc_component": 2263.0,
+  "max_magnitude": 2263.0,
+  "mean_magnitude": 436.2513280831822,
+  "matrix_shape": [
+    4,
+    8
+  ],
+  "G_shape": [
+    4
+  ],
+  "A1_shape": [
+    4,
+    4
+  ],
+  "A2_shape": [
+    8,
+    8
+  ],
+  "G_sha256": "b7281e2a3ff89a0b3cb8c45538a2bfc78f9b6127404ef6bd66641b07f6a25378",
+  "A1_sha256": "f99cba33f091199b01ebe0dde1f33cad69e678c96d848bbe8656e9c8d5b3ae3e",
+  "A2_sha256": "50a7e8043c443773f3e1b2675571c5ade565f8b2ddd25e625322a2b9d89a568d",
+  "singular_values": [
+    2770.023252207642,
+    1476.6101256164031,
+    1004.2536379373381,
+    717.0971690403846
+  ],
+  "rank": 4,
+  "reconstruction_error": 4.547473508864641e-13
+}

@@ -1,0 +1,12 @@
+{
+  "gene": 1,
+  "output_contract": "np.ndarray uint8 -> GENE2 dft_encoder",
+  "size_bytes": 19,
+  "size_elements": 19,
+  "sha256": "bb8907309c118defe3d6c759e50f4af2505c3d7dbebf085892df2a865698a1d1",
+  "dtype": "uint8",
+  "min_byte": 32,
+  "max_byte": 236,
+  "mean_byte": 119.10526315789474,
+  "source_type": "bytes"
+}
