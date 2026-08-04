@@ -115,9 +115,14 @@ int main() {
     char* p=strrchr(dir,'\\');if(p)*p='\0';
     snprintf(drv,MAX_PATH,"%s\\sg_driver.sys",dir);
 
-    if(!load_driver(drv)){printf("Load failed\n");getchar();return 1;}
+    /* Try existing device first */
     g_h=CreateFileA("\\\\.\\SilentGate",GENERIC_READ|GENERIC_WRITE,0,NULL,
         OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+    if(g_h==INVALID_HANDLE_VALUE){
+        if(!load_driver(drv)){printf("Load failed\n");getchar();return 1;}
+        g_h=CreateFileA("\\\\.\\SilentGate",GENERIC_READ|GENERIC_WRITE,0,NULL,
+            OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+    }
     if(g_h==INVALID_HANDLE_VALUE){
         printf("Device failed\n");unload_driver();getchar();return 1;}
 

