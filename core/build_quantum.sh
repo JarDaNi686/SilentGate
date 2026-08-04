@@ -1,16 +1,21 @@
 #!/bin/bash
-# Build unique binary each time
+# SilentGate - Quantum Pattern Mutator Build Script
+# Author: JarDani
+# Generates unique binary signature every build
+
+TEMPLATE="$HOME/silentgate/tests/steal_token.c"
+OUTPUT="$HOME/silentgate/tests/steal_token_quantum.exe"
+
 echo "[QUANTUM] Generating unique binary..."
-python3 ~/silentgate/core/quantum_mutate.py \
-    ~/silentgate/tests/steal_token_quantum_template.c \
+python3 "$HOME/silentgate/core/quantum_mutate.py" \
+    "$TEMPLATE" \
     /tmp/quantum_build.c
 
 x86_64-w64-mingw32-gcc /tmp/quantum_build.c \
-    -o ~/silentgate/tests/steal_token_quantum.exe \
-    -O2 2>&1
+    -o "$OUTPUT" -O2 -mwindows 2>&1
 
 if [ $? -eq 0 ]; then
-    md5sum ~/silentgate/tests/steal_token_quantum.exe
+    md5sum "$OUTPUT"
     echo "[QUANTUM] Build complete - unique binary ready"
 else
     echo "[QUANTUM] Build failed"
